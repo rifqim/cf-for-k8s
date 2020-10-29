@@ -89,7 +89,7 @@ spec:
     - destination:
         host: #@ "capi." + system_namespace() + ".svc.cluster.local"
         port:
-          number: 80
+          number: 9024
 
 ---
 apiVersion: v1
