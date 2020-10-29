@@ -3,9 +3,9 @@ directories:
 - contents:
   - git:
       commitTitle: colocate backup-metadata container with cf-api-controllers...
-      sha: 7919dec71a31104ee808df18035a3c4f6dde1ed6
+      sha: 25cd04ce58f23c18bfe991a98b05efbad7252771
       tags:
-      - v0.4.0-65-g7919dec
+      - v0.4.0-66-g25cd04c
     path: .
   path: config/capi/_ytt_lib/capi-k8s-release
 - contents:
