@@ -3,7 +3,7 @@ kind: Config
 minimumRequiredVersion: 0.22.0
 overrides:
   - image: eirini/opi@sha256:658f14a51c0a77fbc685f867a54ca56504993f299c43d1a63de757206484506b
-    newImage: index.docker.io/relintdockerhubpushbot/cf-for-k8s-eirini-opi@sha256:d20c957c36644e8f9878bfee1633f319b2e94c82b66b16f9565b5796ed20817b
+    newImage: index.docker.io/relintdockerhubpushbot/cf-for-k8s-eirini-opi@sha256:4936d0a6012b6a06f9a09b7fcdf7aaf2884e7339a10828fc25c01771c4fa5c83
     preresolved: true
   - image: eirini/event-reporter@sha256:8971db664d1ccfe7df0f624ebaa71c14f90181fb2f29d0cbbc5275f08b208ff1
     newImage: index.docker.io/relintdockerhubpushbot/cf-for-k8s-eirini-event-reporter@sha256:b06e19ac5232a1077474933e412143f1e4449df94b5899d1e6b29fa823c92b3f
@@ -16,4 +16,13 @@ overrides:
     preresolved: true
   - image: eirini/instance-index-env-injector@sha256:b33fe1df8112c59f5cac6a3a73a063b31c1089ac3bf76e5091de34103432111f
     newImage: index.docker.io/relintdockerhubpushbot/cf-for-k8s-eirini-instance-index-env-injector@sha256:ad9adc876d588fbc6b0592a1f8a9b24efd41e8dcd06ae2244192a7651499def8
+    preresolved: true
+  - image: eirini/recipe-downloader@sha256:422c5c26b28ab8cf409566f4605510ff7bdd304ef02b84962320440c434c5899
+    newImage: index.docker.io/relintdockerhubpushbot/cf-for-k8s-eirini-downloader@sha256:8b6b5bd890dea584f2c1ce1329432cf2f0b3b1d71cf32f54b9d0f035f132c199
+    preresolved: true
+  - image: eirini/recipe-executor@sha256:e77644a5e09a702414c8efc1c31776b77ff1e9fba01a85924ae5efe32e7af38a
+    newImage: index.docker.io/relintdockerhubpushbot/cf-for-k8s-eirini-executor@sha256:ba4c6a02d25f78784c2f9b7a430ebcc59a2e63ea6512e83426e55c6d052ac180
+    preresolved: true
+  - image: eirini/recipe-uploader@sha256:8b2a0143b192854db809f1247a70e48381918e91e270dd0446597c3ab4099243
+    newImage: index.docker.io/relintdockerhubpushbot/cf-for-k8s-eirini-uploader@sha256:890e8e3269c6638141b2eb577cbb27b7c2f1a1822834b29bdaf8da21a042c605
     preresolved: true

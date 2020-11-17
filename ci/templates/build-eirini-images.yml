@@ -1,6 +1,8 @@
 #@ load("@ytt:data", "data")
 
-#@ image_list = [ "opi", "event-reporter", "eirini-controller", "task-reporter", "instance-index-env-injector" ]
+#@ repo_list = [ "eirini", "eirini-staging" ]
+#@ image_list = [ "eirini-controller", "event-reporter", "instance-index-env-injector", "opi", "task-reporter" ]
+#@ staging_image_list = [ "downloader", "executor", "uploader" ]
 #@ eirini_tag = "1.9.0"
 ---
 resources:
@@ -9,6 +11,13 @@ resources:
   source:
     uri: git@github.com:Birdrock/eirini.git
     branch: 1.9.0-backport-stop-hardcoding-uid-2000
+    private_key: ((cf_for_k8s_readonly_deploy_key.private_key))
+
+- name: eirini-staging
+  type: git
+  source:
+    uri: git@github.com:cloudfoundry-incubator/eirini-staging.git
+    branch: #@ eirini_tag
     private_key: ((cf_for_k8s_readonly_deploy_key.private_key))
 
 - name: eirini-release
@@ -29,11 +38,30 @@ resources:
     tag: #@ eirini_tag
 #@ end
 
+#@ for img in staging_image_list:
+- name: #@ "cf-for-k8s-eirini-{}".format(img)
+  type: registry-image
+  source:
+    repository: #@ "relintdockerhubpushbot/cf-for-k8s-eirini-{}".format(img)
+    username: ((dockerhub.username))
+    password: ((dockerhub.password))
+    tag: #@ eirini_tag
+#@ end
+
 jobs:
-#@ for img in image_list:
+#@ for repo in repo_list:
+#@   if repo == "eirini":
+#@     list = image_list
+#@     dockerfiles_dir = "docker"
+#@   elif repo == "eirini-staging":
+#@     list = staging_image_list
+#@     dockerfiles_dir = "image"
+#@   end
+
+#@   for img in list:
 - name: #@ "build-{}".format(img)
   plan:
-  - get: eirini
+  - get: #@ repo
   - get: eirini-release
     trigger: true
   - task: rev-parse
@@ -44,15 +72,17 @@ jobs:
         source:
           repository: bitnami/git
       inputs:
-      - name: eirini
+      - name: #@ repo
       outputs:
       - name: revision
+      params:
+        REPO: #@ repo
       run:
         path: /bin/bash
         args:
         - -c
         - |
-          pushd eirini
+          pushd ${REPO}
             git rev-parse HEAD > ../revision/revision
             git describe --tags > ../revision/tag
           popd > /dev/null
@@ -65,7 +95,7 @@ jobs:
         source:
           repository: vito/oci-build-task
       inputs:
-      - name: eirini
+      - name: #@ repo
       - name: revision
       outputs:
       - name: image
@@ -81,8 +111,8 @@ jobs:
           build
 
       params:
-        DOCKERFILE: #@ "./eirini/docker/{}/Dockerfile".format(img)
-        CONTEXT: ./eirini/
+        DOCKERFILE: #@ "./{}/{}/{}/Dockerfile".format(repo, dockerfiles_dir, img)
+        CONTEXT: #@ "./{}/".format(repo)
   - task: #@ "deplab-{}".format(img)
     privileged: true
     config:
@@ -92,19 +122,22 @@ jobs:
         source:
           repository: relintdockerhubpushbot/cf-for-k8s-deplab
       inputs:
-      - name: eirini
+      - name: #@ repo
       - name: image
       outputs:
       - name: deplab-image
+      params:
+        REPO: #@ repo
       run:
         path: /bin/sh
         args:
         - -c
         - |
           deplab --image-tar image/image.tar \
-            --git eirini \
+            --git ${REPO} \
             --output-tar deplab-image/image.tar
   - put: #@ "cf-for-k8s-eirini-{}".format(img)
     params:
       image: deplab-image/image.tar
+#@   end
 #@ end
