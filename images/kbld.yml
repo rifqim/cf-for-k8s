@@ -1,0 +1,19 @@
+---
+apiVersion: kbld.k14s.io/v1alpha1
+kind: Config
+
+sources:
+- image: cloudfoundry/eirini-opi-cf-for-k8s
+  path: eirini/
+  docker:
+    build:
+      file: docker/opi/Dockerfile
+      rawOptions: ["--build-arg", "GIT_SHA=12345"]
+
+searchRules:
+- keyMatcher:
+    path: [eirini, opi]
+
+# destinations:
+#   - imageRepo: cloudfoundry/eirini-opi-cf-for-k8s
+#     newImage: awittrock/eirini-opi-cf-for-k8s-porcelain
