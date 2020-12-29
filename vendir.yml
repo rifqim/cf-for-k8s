@@ -8,7 +8,7 @@ directories:
   - path: .
     git:
       url: https://github.com/cloudfoundry/capi-k8s-release
-      ref: 06ac2fde69a9302ed4b69860bdf8fcc603642e79
+      ref: 29b77b94183a26cefdc98eff5825f22ae6c75090
     includePaths:
     - templates/**/*
     - values/**/*
@@ -95,7 +95,7 @@ directories:
   - path: .
     githubRelease:
       slug: cloudfoundry-incubator/eirini-release
-      tag: v2.0.0
+      tag: v1.9.0
       disableAutoChecksumValidation: true
       unpackArchive:
         path: eirini.tgz

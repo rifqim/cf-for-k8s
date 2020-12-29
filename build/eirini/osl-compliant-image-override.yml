@@ -2,18 +2,18 @@ apiVersion: kbld.k14s.io/v1alpha1
 kind: Config
 minimumRequiredVersion: 0.22.0
 overrides:
-  - image: eirini/opi@sha256:1b2b281949197294954ab035749fcaa1b1e93591b2c028747e217e539a27a65b
-    newImage: index.docker.io/cloudfoundry/eirini-opi-cf-for-k8s@sha256:1ad949284c2c1f182bbd56bd1eae8202030fdef3afced39a4105a8403ebf0beb
+  - image: eirini/opi@sha256:658f14a51c0a77fbc685f867a54ca56504993f299c43d1a63de757206484506b
+    newImage: index.docker.io/relintdockerhubpushbot/cf-for-k8s-eirini-opi@sha256:d20c957c36644e8f9878bfee1633f319b2e94c82b66b16f9565b5796ed20817b
     preresolved: true
-  - image: eirini/event-reporter@sha256:9743bb498c4c4f89e8e38a61ba594ef9af00dbaa99a2eb081b2ddabe69cb72ca
-    newImage: index.docker.io/cloudfoundry/eirini-event-reporter-cf-for-k8s@sha256:1798ea550cfb7b1457698dc9a9766ad5333da05c1e0cd29e748b7db34e648e1b
+  - image: eirini/event-reporter@sha256:8971db664d1ccfe7df0f624ebaa71c14f90181fb2f29d0cbbc5275f08b208ff1
+    newImage: index.docker.io/relintdockerhubpushbot/cf-for-k8s-eirini-event-reporter@sha256:b06e19ac5232a1077474933e412143f1e4449df94b5899d1e6b29fa823c92b3f
     preresolved: true
-  - image: eirini/eirini-controller@sha256:c802ca5623b970686c77e5497a43daebc4911306d8043e4ecfda4746d20383eb
-    newImage: index.docker.io/cloudfoundry/eirini-eirini-controller-cf-for-k8s@sha256:8651c21931d6a13a0ec2f74c11402086b1cd30cb2e8c2c6fba400abe493c33a8
+  - image: eirini/eirini-controller@sha256:8bce7ed08c3914edee916012e0277012d8d3a54e90bc563bc822c2006d26cf7d
+    newImage: index.docker.io/relintdockerhubpushbot/cf-for-k8s-eirini-eirini-controller@sha256:52a7892033893d3d09b2582ae3d562433b30372dcb3678a37e0efd73d174d342
     preresolved: true
-  - image: eirini/task-reporter@sha256:fe45f32d739213e301eaaea152db505225c9d17a6ca8b7502f3a14d2e2f5bf69
-    newImage: index.docker.io/cloudfoundry/eirini-task-reporter-cf-for-k8s@sha256:2715ac192d671788f2512cf116ac9b483402e477af3d9481724cc40134363d61
+  - image: eirini/task-reporter@sha256:4c105c94d1dad2c9e81ad440335d5561c32e2822372643f55c70d5cff9d5603f
+    newImage: index.docker.io/relintdockerhubpushbot/cf-for-k8s-eirini-task-reporter@sha256:b6173cbf13ecff7f789acc9fb38667caacbdef8a7ee5e0667e7c1470564fa5da
     preresolved: true
-  - image: eirini/instance-index-env-injector@sha256:fa7bef28c805e8fd23d23d9d4312eab6ac92eff69817b2312db2bf71daedb496
-    newImage: index.docker.io/cloudfoundry/eirini-instance-index-env-injector-cf-for-k8s@sha256:42ab156d08756e46e7ebfa280e55c51305648aa133587d262e19fcd30ea0ae64
+  - image: eirini/instance-index-env-injector@sha256:b33fe1df8112c59f5cac6a3a73a063b31c1089ac3bf76e5091de34103432111f
+    newImage: index.docker.io/relintdockerhubpushbot/cf-for-k8s-eirini-instance-index-env-injector@sha256:ad9adc876d588fbc6b0592a1f8a9b24efd41e8dcd06ae2244192a7651499def8
     preresolved: true

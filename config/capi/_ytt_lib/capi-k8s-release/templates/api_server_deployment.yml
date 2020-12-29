@@ -22,7 +22,6 @@ spec:
         prometheus.io/scrape: 'true'
         prometheus.io/port: '9102'
       labels:
-        app: cf-api-server
         app.kubernetes.io/name: cf-api-server
     spec:
       #@ if/end data.values.imagePullSecrets:
@@ -84,13 +83,9 @@ spec:
         - name: registry-buddy
           image: #@ data.values.images.registry_buddy
           imagePullPolicy: Always
-          resources:
-            requests:
-              cpu: 500m
-              memory: 15Mi
-            limits:
-              cpu: 15000m
-              memory: 150Mi
+          readinessProbe:
+            tcpSocket:
+              port: 8080
           volumeMounts:
           - name: tmp-packages
             mountPath: /tmp/packages

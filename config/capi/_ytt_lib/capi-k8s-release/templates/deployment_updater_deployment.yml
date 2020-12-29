@@ -19,7 +19,6 @@ spec:
   template:
     metadata:
       labels:
-        app: cf-api-deployment-updater
         app.kubernetes.io/name: cf-api-deployment-updater
     spec:
       #@ if/end data.values.imagePullSecrets:
@@ -29,8 +28,6 @@ spec:
           image: #@ data.values.images.ccng
           imagePullPolicy: Always
           command: [ "/cnb/process/deployment-updater" ]
-          ports:
-          - containerPort: 4445
           env:
           - name: CLOUD_CONTROLLER_NG_CONFIG
             value: #@ ccng_config_mount_path

@@ -11,7 +11,6 @@ blobstore:
   region: ""
   resource_directory_key: cc-resources
   secret_access_key_secret_name:
-  fog_aws_storage_options: {}
 cc:
   log_level: info
 ccdb:
@@ -47,8 +46,6 @@ uaa:
   clients:
     cf_api_controllers:
       secret_name:
-    cf_api_backup_metadata_generator:
-      secret_name:
     cloud_controller_username_lookup:
       secret_name:
   serverCerts:
@@ -61,8 +58,4 @@ images:
   nginx:
   statsd_exporter:
   registry_buddy:
-  backup_metadata_generator:
 temporary_disable_v2_staging: true
-honeycomb:
-  write_key: ""
-  dataset: ""
