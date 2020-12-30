@@ -8,14 +8,14 @@ metadata:
   name: cf-buildpack-store
 spec:
   sources:
-  - image: gcr.io/paketo-buildpacks/ruby@sha256:f8848e505e75b1aa8116747235c537f4e198676d6545eb4617214e4df8da2339
+  - image: gcr.io/paketo-buildpacks/ruby@sha256:334a54e4ce8422caf3da4facdb1715d2a2d7007ae18fd6a13fd8dc11eeac3573
   - image: gcr.io/paketo-community/python@sha256:e6546f3072c49336ce99a2d8297716b748a69da9128c5afb1606c2b73a18a317
-  - image: gcr.io/paketo-buildpacks/java@sha256:5e8e6a02a827a189effdc1e52772d72faacaf6ab9d71af0431a472a929704458
-  - image: gcr.io/paketo-buildpacks/nodejs@sha256:4b723c77e6313b7d283fc0e1c2745979a88930935b05f9a2268023b3cb45d7db
-  - image: gcr.io/paketo-buildpacks/go@sha256:913f17254fea069c8ff8b1e47e6367dec689a7ecc497be1a30fd8f042a1daf26
-  - image: gcr.io/paketo-buildpacks/dotnet-core@sha256:766c3a800cc69b80e079960dc52af3b22c71fe07dd43ba728a9b9e72fd5873d5
+  - image: gcr.io/paketo-buildpacks/java@sha256:bcfe1dc86d082a0f560d257d3a0431a346ea5d3947e270f3998bcad4fb1110c7
+  - image: gcr.io/paketo-buildpacks/nodejs@sha256:46ba5034bb8b887a96f5b45b6f8111075e0c31591b8ba8a00b35a1e0bcfdccac
+  - image: gcr.io/paketo-buildpacks/go@sha256:dde5cfa69ba74fa869a4435cc7138462b59ee70de34f3d8e9f83562173af7714
+  - image: gcr.io/paketo-buildpacks/dotnet-core@sha256:db7d464fbaf62dd199f782a6efbca1cbbb60874654048e6ab9966dbda695dd78
   - image: gcr.io/paketo-buildpacks/php@sha256:9e3d9c0c192773d559fbf232667fb2c82425240d9f36c7fbd1354a6c991b433f
-  - image: gcr.io/paketo-buildpacks/procfile@sha256:bf6a4265db23ae25b34d402cd24e04c36dccdf24d6a6b9297f1d154a9d0b8062
+  - image: gcr.io/paketo-buildpacks/procfile@sha256:861d9c93924dd1db3fbe6663754da603398931cdc4dee3da5c057ffa65cb383d
 
 ---
 apiVersion: kpack.io/v1alpha1
@@ -25,9 +25,9 @@ metadata:
 spec:
   id: "io.buildpacks.stacks.bionic"
   buildImage:
-    image: "index.docker.io/paketobuildpacks/build@sha256:fd05382fee8f4d259db8019948564cdf527cd09f77699920dd71a45afe4d6b32"
+    image: "index.docker.io/paketobuildpacks/build@sha256:ef09483901fec54c83c41a67e35e80d79450b1fdc0da7375b17bd93fd9a4a96c"
   runImage:
-    image: "index.docker.io/paketobuildpacks/run@sha256:dbe17be507b1cc6ffae1e9edf02806fe0e28ffbbb89a6c7ef41f37b69156c3c2"
+    image: "index.docker.io/paketobuildpacks/run@sha256:a007dd49172dd89c790a095ec6b54291dcb7bed942dd0a8ffd0a8d0b77cb68b5"
 
 ---
 apiVersion: kpack.io/v1alpha1
