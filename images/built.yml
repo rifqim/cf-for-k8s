@@ -3,7 +3,7 @@ kind: Config
 minimumRequiredVersion: 0.27.0
 overrides:
 - image: cloudfoundry/eirini-opi-cf-for-k8s
-  newImage: kbld:cloudfoundry-eirini-opi-cf-for-k8s-sha256-59aa1220e0aa7c6fdc7618b54644966735fc95b2ffc8298ce36e1522b01a8336
+  newImage: kbld:cloudfoundry-eirini-opi-cf-for-k8s-sha256-2747ce37fb56a4fb5fd6a67805cdc8d13152e9f2db942182c47aee9fdc725f36
   preresolved: true
 searchRules:
 - keyMatcher:

@@ -8,12 +8,9 @@ sources:
   docker:
     build:
       file: docker/opi/Dockerfile
+      buildkit: true
       rawOptions: ["--build-arg", "GIT_SHA=12345"]
 
 searchRules:
 - keyMatcher:
     path: [eirini, opi]
-
-# destinations:
-#   - imageRepo: cloudfoundry/eirini-opi-cf-for-k8s
-#     newImage: awittrock/eirini-opi-cf-for-k8s-porcelain
