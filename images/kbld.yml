@@ -1,16 +1,21 @@
+#@ load("@ytt:data", "data")
 ---
 apiVersion: kbld.k14s.io/v1alpha1
 kind: Config
 
 sources:
-- image: cloudfoundry/eirini-opi-cf-for-k8s
+- image: #@ data.values.eirini.opi.image
   path: eirini/
   docker:
     build:
-      file: docker/opi/Dockerfile
+      file: #@ data.values.eirini.opi.dockerfile
+      buildkit: true
+      rawOptions: ["--build-arg", "GIT_SHA=12345"]
+- image: #@ data.values.eirini.event_reporter.image
+  path: eirini/
+  docker:
+    build:
+      file: #@ data.values.eirini.event_reporter.dockerfile
       buildkit: true
       rawOptions: ["--build-arg", "GIT_SHA=12345"]
 
-searchRules:
-- keyMatcher:
-    path: [eirini, opi]

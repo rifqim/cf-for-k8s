@@ -1,3 +1,9 @@
+#@data/values
 ---
 eirini:
-  opi: cloudfoundry/eirini-opi-cf-for-k8s
+  opi:
+    image: cloudfoundry/eirini-opi-cf-for-k8s
+    dockerfile: docker/opi/Dockerfile
+  event_reporter:
+    image: cloudfoundry/eirini-event-reporter-cf-for-k8s
+    dockerfile: docker/event-reporter/Dockerfile

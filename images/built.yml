@@ -2,11 +2,9 @@ apiVersion: kbld.k14s.io/v1alpha1
 kind: Config
 minimumRequiredVersion: 0.27.0
 overrides:
+- image: cloudfoundry/eirini-event-reporter-cf-for-k8s
+  newImage: kbld:cloudfoundry-eirini-event-reporter-cf-for-k8s-sha256-d4e1e968491c9dba8f97ffd6ed0b52307d728082b8d98952a1282311d6fe2263
+  preresolved: true
 - image: cloudfoundry/eirini-opi-cf-for-k8s
   newImage: kbld:cloudfoundry-eirini-opi-cf-for-k8s-sha256-2747ce37fb56a4fb5fd6a67805cdc8d13152e9f2db942182c47aee9fdc725f36
   preresolved: true
-searchRules:
-- keyMatcher:
-    path:
-    - eirini
-    - opi
