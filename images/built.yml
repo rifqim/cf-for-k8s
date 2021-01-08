@@ -2,9 +2,18 @@ apiVersion: kbld.k14s.io/v1alpha1
 kind: Config
 minimumRequiredVersion: 0.27.0
 overrides:
+- image: cloudfoundry/eirini-eirini-controller-cf-for-k8s
+  newImage: kbld:cloudfoundry-eirini-eirini-controller-cf-for-k8s-sha256-5034713abef7c7c2722a09b495a241667905c2cae631cf904157ffd9ac733299
+  preresolved: true
 - image: cloudfoundry/eirini-event-reporter-cf-for-k8s
   newImage: kbld:cloudfoundry-eirini-event-reporter-cf-for-k8s-sha256-d4e1e968491c9dba8f97ffd6ed0b52307d728082b8d98952a1282311d6fe2263
   preresolved: true
+- image: cloudfoundry/eirini-instance-index-env-injector-cf-for-k8s
+  newImage: kbld:cloudfoundry-eirini-instance-index-env-injector-cf-sha256-e3fc0f78d9cb7e05dd5f1005608ace60a0829c75520a97a6f4e72bd1db76b89a
+  preresolved: true
 - image: cloudfoundry/eirini-opi-cf-for-k8s
   newImage: kbld:cloudfoundry-eirini-opi-cf-for-k8s-sha256-2747ce37fb56a4fb5fd6a67805cdc8d13152e9f2db942182c47aee9fdc725f36
+  preresolved: true
+- image: cloudfoundry/eirini-task-reporter-cf-for-k8s
+  newImage: kbld:cloudfoundry-eirini-task-reporter-cf-for-k8s-sha256-da51164b7e53b36eb9b450d905530f3b69a805525d5bd41782a83048042a3f4e
   preresolved: true
