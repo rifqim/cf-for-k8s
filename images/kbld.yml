@@ -5,14 +5,20 @@ apiVersion: kbld.k14s.io/v1alpha1
 kind: Config
 
 sources:
-#@ images = struct.decode(data.values.eirini)
-#@ for key in images:
-#@ image = struct.encode(images[key])
-- image: #@ image.image
-  path: eirini/
-  docker:
-    build:
-      file: #@ image.dockerfile
-      buildkit: true
-      rawOptions: ["--build-arg", "GIT_SHA=12345"]
+#@ components = struct.decode(data.values)
+#@ for component in components:
+  #@ for key in components[component]:
+  #@ image = struct.encode(components[component][key])
+  - image: #@ image.image_repository
+    path: #@ image.source_path
+    docker:
+      build:
+        file: #@ image.dockerfile
+        buildkit: true
+        rawOptions: ["--build-arg", "GIT_SHA=12345"]
+  #@ end
 #@ end
+
+searchRules:
+  - keyMatcher:
+      name: image_repository

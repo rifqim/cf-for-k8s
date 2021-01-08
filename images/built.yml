@@ -17,3 +17,6 @@ overrides:
 - image: cloudfoundry/eirini-task-reporter-cf-for-k8s
   newImage: kbld:cloudfoundry-eirini-task-reporter-cf-for-k8s-sha256-da51164b7e53b36eb9b450d905530f3b69a805525d5bd41782a83048042a3f4e
   preresolved: true
+searchRules:
+- keyMatcher:
+    name: image_repository

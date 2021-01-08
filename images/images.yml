@@ -2,17 +2,22 @@
 ---
 eirini:
   opi:
-    image: cloudfoundry/eirini-opi-cf-for-k8s
+    image_repository: cloudfoundry/eirini-opi-cf-for-k8s
     dockerfile: docker/opi/Dockerfile
+    source_path: eirini
   event_reporter:
-    image: cloudfoundry/eirini-event-reporter-cf-for-k8s
+    image_repository: cloudfoundry/eirini-event-reporter-cf-for-k8s
     dockerfile: docker/event-reporter/Dockerfile
+    source_path: eirini
   eirini_controller:
-    image: cloudfoundry/eirini-eirini-controller-cf-for-k8s
+    image_repository: cloudfoundry/eirini-eirini-controller-cf-for-k8s
     dockerfile: docker/eirini-controller/Dockerfile
+    source_path: eirini
   task_reporter:
-    image: cloudfoundry/eirini-task-reporter-cf-for-k8s
+    image_repository: cloudfoundry/eirini-task-reporter-cf-for-k8s
     dockerfile: docker/task-reporter/Dockerfile
+    source_path: eirini
   instance_index_env_injector:
-    image: cloudfoundry/eirini-instance-index-env-injector-cf-for-k8s
+    image_repository: cloudfoundry/eirini-instance-index-env-injector-cf-for-k8s
     dockerfile: docker/instance-index-env-injector/Dockerfile
+    source_path: eirini
