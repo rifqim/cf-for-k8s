@@ -1,21 +1,18 @@
 #@ load("@ytt:data", "data")
+#@ load("@ytt:struct", "struct")
 ---
 apiVersion: kbld.k14s.io/v1alpha1
 kind: Config
 
 sources:
-- image: #@ data.values.eirini.opi.image
+#@ images = struct.decode(data.values.eirini)
+#@ for key in images:
+#@ image = struct.encode(images[key])
+- image: #@ image.image
   path: eirini/
   docker:
     build:
-      file: #@ data.values.eirini.opi.dockerfile
+      file: #@ image.dockerfile
       buildkit: true
       rawOptions: ["--build-arg", "GIT_SHA=12345"]
-- image: #@ data.values.eirini.event_reporter.image
-  path: eirini/
-  docker:
-    build:
-      file: #@ data.values.eirini.event_reporter.dockerfile
-      buildkit: true
-      rawOptions: ["--build-arg", "GIT_SHA=12345"]
-
+#@ end
