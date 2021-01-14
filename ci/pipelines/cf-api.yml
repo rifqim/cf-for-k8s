@@ -176,6 +176,14 @@ resources:
     private_key: ((private_key.private_key))
     uri: git@github.com:cloudfoundry/cf-for-k8s.git
 
+- name: cf-for-k8s-develop
+  type: git
+  source:
+    # TODO: revert this to develop after it looks good
+    branch: migrate-cake-pipeline
+    private_key: ((private_key.private_key))
+    uri: git@github.com:cloudfoundry/cf-for-k8s.git
+
 - name: cloud-controller-ng
   type: git
   source:
@@ -304,10 +312,10 @@ jobs:
   - in_parallel:
     - get: cloud-controller-ng
       trigger: true
-    - get: capi-ci
+    - get: cf-for-k8s-develop
   - in_parallel:
     - task: run-cc-unit-tests-mysql
-      file: capi-ci/ci/test-unit/run_cc_unit_tests.yml
+      file: cf-for-k8s/ci/tasks/cake/run_cc_unit_tests.yml
       privileged: true
       input_mapping:
         cloud_controller_ng: cloud-controller-ng
@@ -315,7 +323,7 @@ jobs:
         DB: mysql
         RUN_IN_PARALLEL: true
     - task: run-cc-unit-tests-postgres
-      file: capi-ci/ci/test-unit/run_cc_unit_tests.yml
+      file: cf-for-k8s/ci/tasks/cake/run_cc_unit_tests.yml
       privileged: true
       input_mapping:
         cloud_controller_ng: cloud-controller-ng
@@ -328,9 +336,9 @@ jobs:
   - in_parallel:
     - get: cf-api-controllers
       trigger: true
-    - get: capi-ci
+    - get: cf-for-k8s-develop
   - task: run-cf-api-controllers-unit-tests
-    file: capi-ci/ci/k8s/run-cf-api-controllers-unit-tests.yml
+    file: cf-for-k8s/ci/tasks/cake/run-cf-api-controllers-unit-tests.yml
     on_failure:
       put: slack-alert
       params:
@@ -342,9 +350,9 @@ jobs:
   - in_parallel:
     - get: registry-buddy
       trigger: true
-    - get: capi-ci
+    - get: cf-for-k8s-develop
   - task: run-registry-buddy-unit-tests
-    file: capi-ci/ci/k8s/run-registry-buddy-unit-tests.yml
+    file: cf-for-k8s/ci/tasks/cake/run-registry-buddy-unit-tests.yml
     on_failure:
       put: slack-alert
       params:
@@ -356,10 +364,10 @@ jobs:
     - in_parallel:
         - get: registry-buddy
           trigger: true
-        - get: capi-ci
+        - get: cf-for-k8s-develop
     - in_parallel:
       - task: run-registry-buddy-integration-tests-on-gcr
-        file: capi-ci/ci/k8s/run-registry-buddy-integration-tests.yml
+        file: cf-for-k8s/ci/tasks/cake/run-registry-buddy-integration-tests.yml
         params:
           REGISTRY_BASE_PATH: gcr.io/cf-capi-ci/registry-buddy-integration
           REGISTRY_PASSWORD: ((ci_gcp_json_key))
@@ -370,7 +378,7 @@ jobs:
             text: '[registry-buddy-integration-tests] OH NO! Failed package registry-ing with GCR'
             icon_emoji: ":pickle:"
       - task: run-registry-buddy-integration-tests-on-dockerhub
-        file: capi-ci/ci/k8s/run-registry-buddy-integration-tests.yml
+        file: cf-for-k8s/ci/tasks/cake/run-registry-buddy-integration-tests.yml
         params:
           REGISTRY_BASE_PATH: index.docker.io/c4ketest
           REGISTRY_PASSWORD: ((dockerhub_test.password))
@@ -382,7 +390,7 @@ jobs:
             icon_emoji: ":pickle:"
       # TODO: we will run tests against Harbor again as part of this: https://www.pivotaltracker.com/story/show/175365622
       # - task: run-registry-buddy-integration-tests-on-harbor
-      #   file: capi-ci/ci/k8s/run-registry-buddy-integration-tests.yml
+      #   file: cf-for-k8s/ci/tasks/cake/run-registry-buddy-integration-tests.yml
       #   params:
       #     REGISTRY_BASE_PATH: dev.registry.pivotal.io/cf-cake
       #     REGISTRY_PASSWORD: ((dev_pivnet_registry_password))
@@ -398,9 +406,9 @@ jobs:
     - in_parallel:
       - get: backup-metadata-generator
         trigger: true
-      - get: capi-ci
+      - get: cf-for-k8s-develop
     - task: run-backup-metadata-generator-unit-tests
-      file: capi-ci/ci/backup-metadata-generator/run-backup-metadata-generator-unit-tests.yml
+      file: cf-for-k8s/ci/tasks/cake/run-backup-metadata-generator-unit-tests.yml
 
 - name: build-backup-metadata-generator-image
   plan:
@@ -408,10 +416,10 @@ jobs:
         - get: backup-metadata-generator
           passed: [backup-metadata-generator-unit-tests]
           trigger: true
-        - get: capi-ci
+        - get: cf-for-k8s-develop
     - task: build-with-pack
       privileged: true
-      file: capi-ci/ci/oci/build-with-pack.yml
+      file: cf-for-k8s/ci/tasks/cake/build-with-pack.yml
       params:
         CONTEXT_PATH: src/backup-metadata-generator
         ADDITIONAL_ARGS: "--buildpack gcr.io/paketo-buildpacks/go --buildpack gcr.io/paketo-buildpacks/procfile --default-process wait"
@@ -419,7 +427,7 @@ jobs:
         source-repository: backup-metadata-generator
     - task: run-deplab
       privileged: true
-      file: capi-ci/ci/docker/run-deplab.yml
+      file: cf-for-k8s/ci/tasks/cake/run-deplab.yml
       input_mapping:
         source-repository: backup-metadata-generator
     - put: backup-metadata-generator-docker-image
@@ -432,17 +440,17 @@ jobs:
       - get: cloud-controller-ng
         passed: [cc-unit-tests]
         trigger: true
-      - get: capi-ci
+      - get: cf-for-k8s-develop
     - task: build-with-pack
       privileged: true
-      file: capi-ci/ci/oci/build-with-pack.yml
+      file: cf-for-k8s/ci/tasks/cake/build-with-pack.yml
       params:
         ADDITIONAL_ARGS: "-b gcr.io/paketo-buildpacks/ruby"
       input_mapping:
         source-repository: cloud-controller-ng
     - task: run-deplab
       privileged: true
-      file: capi-ci/ci/docker/run-deplab.yml
+      file: cf-for-k8s/ci/tasks/cake/run-deplab.yml
       input_mapping:
         source-repository: cloud-controller-ng
     - put: capi-docker-image
@@ -455,17 +463,17 @@ jobs:
       - get: cf-api-controllers
         trigger: true
         passed: [cf-api-controllers-unit-tests]
-      - get: capi-ci
+      - get: cf-for-k8s-develop
     - task: build-with-pack
       privileged: true
-      file: capi-ci/ci/oci/build-with-pack.yml
+      file: cf-for-k8s/ci/tasks/cake/build-with-pack.yml
       params:
         CONTEXT_PATH: src/cf-api-controllers
       input_mapping:
         source-repository: cf-api-controllers
     - task: run-deplab
       privileged: true
-      file: capi-ci/ci/docker/run-deplab.yml
+      file: cf-for-k8s/ci/tasks/cake/run-deplab.yml
       input_mapping:
         source-repository: cf-api-controllers
     - put: cf-api-controllers-docker-image
@@ -478,17 +486,17 @@ jobs:
       - get: registry-buddy
         trigger: true
         passed: [registry-buddy-unit-tests, registry-buddy-integration-tests]
-      - get: capi-ci
+      - get: cf-for-k8s-develop
     - task: build-with-pack
       privileged: true
-      file: capi-ci/ci/oci/build-with-pack.yml
+      file: cf-for-k8s/ci/tasks/cake/build-with-pack.yml
       params:
         CONTEXT_PATH: src/registry-buddy
       input_mapping:
         source-repository: registry-buddy
     - task: run-deplab
       privileged: true
-      file: capi-ci/ci/docker/run-deplab.yml
+      file: cf-for-k8s/ci/tasks/cake/run-deplab.yml
       input_mapping:
         source-repository: registry-buddy
     - put: registry-buddy-docker-image
@@ -500,17 +508,17 @@ jobs:
     - in_parallel:
       - get: capi-nginx
         trigger: true
-      - get: capi-ci
+      - get: cf-for-k8s-develop
     - task: build
       privileged: true
-      file: capi-ci/ci/docker/oci-build-task.yml
+      file: cf-for-k8s/ci/tasks/cake/oci-build-task.yml
       input_mapping:
         context-repository: capi-nginx
       params:
         CONTEXT: context-repository/dockerfiles/nginx
     - task: run-deplab
       privileged: true
-      file: capi-ci/ci/docker/run-deplab.yml
+      file: cf-for-k8s/ci/tasks/cake/run-deplab.yml
       input_mapping:
         source-repository: capi-nginx
     - put: nginx-docker-image
@@ -527,7 +535,7 @@ jobs:
     - get: capi-k8s-release-except-images
       trigger: true
     - get: capi-k8s-release
-    - get: capi-ci
+    - get: cf-for-k8s-develop
     - get: capi-bara-tests
     - get: cf-cli
     - get: capi-ci-private
@@ -556,14 +564,14 @@ jobs:
       passed: [provision-samus-cluster]
     - get: cf-acceptance-tests
   - task: delete-deployment
-    file: capi-ci/ci/k8s/delete-cf-for-k8s.yml
+    file: cf-for-k8s/ci/tasks/cake/delete-cf-for-k8s.yml
     params:
       CAPI_ENVIRONMENT_NAME: samus
       GOOGLE_SERVICE_ACCOUNT_EMAIL: concourse@cff-capi-samus.iam.gserviceaccount.com
       GOOGLE_PROJECT_NAME: cff-capi-samus
       GOOGLE_KEY_FILE_PATH: capi-ci-private/samus/concourse-service-account.json
   - task: deploy
-    file: capi-ci/ci/k8s/deploy-cf-for-k8s.yml
+    file: cf-for-k8s/ci/tasks/cake/deploy-cf-for-k8s.yml
     input_mapping:
       capi-k8s-release: capi-k8s-release-except-images
       cluster-tf-state: samus-cluster-tf-state
@@ -577,7 +585,7 @@ jobs:
     ensure:
       do:
       - task: commit-env-metadata
-        file: capi-ci/ci/k8s/commit-env-metadata.yml
+        file: cf-for-k8s/ci/tasks/cake/commit-env-metadata.yml
         params:
           REPO_SUBDIRECTORY: samus
         input_mapping:
@@ -601,7 +609,7 @@ jobs:
         GOOGLE_KEY_FILE_PATH: capi-ci-private/samus/concourse-service-account.json
         NODES: 3
     - task: run-smoke-tests
-      file: capi-ci/ci/k8s/run-smoke-tests.yml
+      file: cf-for-k8s/ci/tasks/cake/run-smoke-tests.yml
       params:
         CAPI_ENVIRONMENT_NAME: samus
         GOOGLE_SERVICE_ACCOUNT_EMAIL: concourse@cff-capi-samus.iam.gserviceaccount.com
@@ -609,7 +617,7 @@ jobs:
         GOOGLE_KEY_FILE_PATH: capi-ci-private/samus/concourse-service-account.json
         SMOKE_TEST_SKIP_SSL: true
     - task: capi-bara-tests
-      file: capi-ci/ci/baras/run-baras.yml
+      file: cf-for-k8s/ci/tasks/cake/run-baras.yml
       input_mapping:
         integration-config: env-metadata
       params:
@@ -628,7 +636,7 @@ jobs:
           passed: [build-backup-metadata-generator-image]
         - get: capi-k8s-release-except-images
           trigger: true
-        - get: capi-ci
+        - get: cf-for-k8s-develop
         - get: capi-ci-private
         - get: cf-for-k8s
         - get: backup-metadata-generator-docker-image
@@ -641,14 +649,14 @@ jobs:
         - get: samus-backup-test-cluster-tf-state
           passed: [ provision-samus-backup-test-cluster ]
     - task: delete-deployment
-      file: capi-ci/ci/k8s/delete-cf-for-k8s.yml
+      file: cf-for-k8s/ci/tasks/cake/delete-cf-for-k8s.yml
       params:
         CAPI_ENVIRONMENT_NAME: samus-backup-test
         GOOGLE_SERVICE_ACCOUNT_EMAIL: concourse@cff-capi-samus.iam.gserviceaccount.com
         GOOGLE_PROJECT_NAME: cff-capi-samus
         GOOGLE_KEY_FILE_PATH: capi-ci-private/samus/concourse-service-account.json
     - task: deploy
-      file: capi-ci/ci/k8s/deploy-cf-for-k8s.yml
+      file: cf-for-k8s/ci/tasks/cake/deploy-cf-for-k8s.yml
       input_mapping:
         capi-k8s-release: capi-k8s-release-except-images
         cluster-tf-state: samus-backup-test-cluster-tf-state
@@ -662,7 +670,7 @@ jobs:
       ensure:
         do:
           - task: commit-env-metadata
-            file: capi-ci/ci/k8s/commit-env-metadata.yml
+            file: cf-for-k8s/ci/tasks/cake/commit-env-metadata.yml
             params:
               REPO_SUBDIRECTORY: samus-backup-test
             input_mapping:
@@ -672,7 +680,7 @@ jobs:
               repository: updated-private-env-repo
               rebase: true
     - task: install-velero
-      file: capi-ci/ci/backup-metadata-generator/install-velero.yml
+      file: cf-for-k8s/ci/tasks/cake/install-velero.yml
       params:
         GKE_SERVICE_ACCOUNT_KEY: ((backup_metadata_gke_service_account_key))
         VELERO_SERVICE_ACCOUNT_KEY: ((backup_metadata_velero_service_account_key))
@@ -680,7 +688,7 @@ jobs:
         CLUSTER_NAME: samus-backup-test
         GCP_ZONE: us-west1-a
     - task: e2e-test
-      file: capi-ci/ci/backup-metadata-generator/e2e-test.yml
+      file: cf-for-k8s/ci/tasks/cake/e2e-test.yml
       input_mapping:
         capi-k8s-release: capi-k8s-release-except-images
       params:
@@ -693,7 +701,7 @@ jobs:
   serial: true
   plan:
   - in_parallel:
-    - get: capi-ci
+    - get: cf-for-k8s-develop
     - get: cloud-controller-ng
       passed: [samus-cf-for-k8s]
     - get: capi-docker-image
@@ -723,7 +731,7 @@ jobs:
     - get: backup-metadata-generator
       passed: [ backup-metadata-generator-deploy-and-test ]
   - task: bump-capi-k8s-release-image-refs
-    file: capi-ci/ci/k8s/bump-capi-k8s-release-image-refs.yml
+    file: cf-for-k8s/ci/tasks/cake/bump-capi-k8s-release-image-refs.yml
   - put: capi-k8s-release
     params:
       repository: updated-capi-k8s-release

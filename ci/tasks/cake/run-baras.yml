@@ -1,0 +1,49 @@
+---
+platform: linux
+
+image_resource:
+  type: docker-image
+  source:
+    repository: cloudfoundry/capi
+    tag: cf-for-k8s
+
+inputs:
+  - name: capi-ci
+  - name: capi-bara-tests
+  - name: cf-cli
+  - name: integration-config
+  - name: capi-ci-private
+    optional: true
+
+run:
+  path: capi-ci/ci/baras/run-baras.sh
+
+params:
+
+  # - Optional
+  # - Number of parallel ginkgo nodes.
+  NODES: 12
+
+  # - Optional
+  # - Number of times ginkgo will re-run a flaky test
+  FLAKE_ATTEMPTS: 1
+
+  # - Optional
+  # - Path to the BARAs integration configuration file.
+  # - The path is relative to the `integration-config` input.
+  CONFIG_FILE_PATH: integration_config.json
+
+
+  # Optional
+  # This is the Google Cloud project name.
+  GOOGLE_PROJECT_NAME:
+
+  # Optional
+  # This is the service account that has access to the K8s cluster under
+  # GOOGLE_PROJECT_NAME.
+  GOOGLE_SERVICE_ACCOUNT_EMAIL:
+
+  # Optional
+  # This is the path to a key-file associated with the Google service account
+  # and project.  It'll be passed as a `--key-file` to the `gcloud` command.
+  GOOGLE_KEY_FILE_PATH:
