@@ -10,7 +10,7 @@ image_resource:
 
 inputs:
   - name: backup-metadata-generator
-  - name: capi-ci
+  - name: cf-for-k8s-ci
 
 run:
-  path: capi-ci/ci/backup-metadata-generator/run-backup-metadata-generator-unit-tests.sh
+  path: cf-for-k8s-ci/ci/tasks/cake/run-backup-metadata-generator-unit-tests.sh

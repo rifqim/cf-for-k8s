@@ -7,7 +7,7 @@ image_resource:
     tag: capi-pack-builder
 
 inputs:
-  - name: capi-ci
+  - name: cf-for-k8s-ci
   - name: source-repository
 
 outputs:
@@ -18,4 +18,4 @@ params:
   ADDITIONAL_ARGS: null
 
 run:
-  path: capi-ci/ci/oci/build-with-pack.sh
+  path: cf-for-k8s-ci/ci/tasks/cake/build-with-pack.sh

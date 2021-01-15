@@ -8,7 +8,7 @@ image_resource:
     tag: cf-for-k8s
 
 inputs:
-  - name: capi-ci
+  - name: cf-for-k8s-ci
   - name: capi-bara-tests
   - name: cf-cli
   - name: integration-config
@@ -16,7 +16,7 @@ inputs:
     optional: true
 
 run:
-  path: capi-ci/ci/baras/run-baras.sh
+  path: cf-for-k8s-ci/ci/tasks/cake/run-baras.sh
 
 params:
 

@@ -8,7 +8,7 @@ image_resource:
     tag: cf-for-k8s
 
 inputs:
-  - name: capi-ci
+  - name: cf-for-k8s-ci
   - name: capi-k8s-release
 
 params:
@@ -17,4 +17,4 @@ params:
   GCP_ZONE:
 
 run:
-  path: capi-ci/ci/backup-metadata-generator/e2e-test.sh
+  path: cf-for-k8s-ci/ci/tasks/cake/e2e-test.sh

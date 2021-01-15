@@ -8,7 +8,7 @@ image_resource:
     tag: cf-for-k8s
 
 inputs:
-- name: capi-ci
+- name: cf-for-k8s-ci
 - name: capi-ci-private
 - name: cf-for-k8s
 - name: env-metadata
@@ -38,4 +38,4 @@ params:
   SMOKE_TEST_SKIP_SSL: false
 
 run:
-  path: capi-ci/ci/k8s/run-smoke-tests.sh
+  path: cf-for-k8s-ci/ci/tasks/cake/run-smoke-tests.sh

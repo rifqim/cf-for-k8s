@@ -8,7 +8,7 @@ image_resource:
     tag: cf-for-k8s
 
 inputs:
-- name: capi-ci
+- name: cf-for-k8s-ci
 - name: capi-ci-private
 - name: cf-for-k8s
 - name: capi-k8s-release
@@ -54,4 +54,4 @@ params:
   GOOGLE_KEY_FILE_PATH:
 
 run:
-  path: capi-ci/ci/k8s/deploy-cf-for-k8s.sh
+  path: cf-for-k8s-ci/ci/tasks/cake/deploy-cf-for-k8s.sh

@@ -8,7 +8,7 @@ image_resource:
     tag: cf-for-k8s
 
 inputs:
-- name: capi-ci
+- name: cf-for-k8s-ci
 - name: capi-k8s-release
 - name: capi-docker-image
 - name: cf-api-controllers-docker-image
@@ -29,4 +29,4 @@ params:
   GIT_COMMIT_USERNAME: "CAPI CI Bot"
 
 run:
-  path: capi-ci/ci/k8s/bump-capi-k8s-release-image-refs.sh
+  path: cf-for-k8s-ci/ci/tasks/cake/bump-capi-k8s-release-image-refs.sh

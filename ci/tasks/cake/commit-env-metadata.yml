@@ -8,7 +8,7 @@ image_resource:
     tag: cf-for-k8s
 
 inputs:
-  - name: capi-ci
+  - name: cf-for-k8s-ci
   - name: env-metadata
   - name: private-env-repo
 
@@ -21,4 +21,4 @@ outputs:
   - name: updated-private-env-repo
 
 run:
-  path: capi-ci/ci/k8s/commit-env-metadata.sh
+  path: cf-for-k8s-ci/ci/tasks/cake/commit-env-metadata.sh
