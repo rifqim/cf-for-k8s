@@ -675,7 +675,7 @@ jobs:
     - task: install-velero
       file: cf-for-k8s-ci/ci/tasks/cake/install-velero.yml
       params:
-        GKE_SERVICE_ACCOUNT_KEY: ((backup_metadata_gke_service_account_key))
+        GKE_SERVICE_ACCOUNT_KEY: ((samus_gcp_json_key))
         VELERO_SERVICE_ACCOUNT_KEY: ((backup_metadata_velero_service_account_key))
         VELERO_TEST_BUCKET: samus-backup-test-cluster-velero-bucket
         CLUSTER_NAME: samus-backup-test
