@@ -10,16 +10,13 @@ image_resource:
 inputs:
   - name: cf-for-k8s-ci
   - name: capi-bara-tests
-  - name: cf-cli
   - name: integration-config
-  - name: capi-ci-private
-    optional: true
+  - name: pool-lock
 
 run:
   path: cf-for-k8s-ci/ci/tasks/cake/run-baras.sh
 
 params:
-
   # - Optional
   # - Number of parallel ginkgo nodes.
   NODES: 12
@@ -32,18 +29,3 @@ params:
   # - Path to the BARAs integration configuration file.
   # - The path is relative to the `integration-config` input.
   CONFIG_FILE_PATH: integration_config.json
-
-
-  # Optional
-  # This is the Google Cloud project name.
-  GOOGLE_PROJECT_NAME:
-
-  # Optional
-  # This is the service account that has access to the K8s cluster under
-  # GOOGLE_PROJECT_NAME.
-  GOOGLE_SERVICE_ACCOUNT_EMAIL:
-
-  # Optional
-  # This is the path to a key-file associated with the Google service account
-  # and project.  It'll be passed as a `--key-file` to the `gcloud` command.
-  GOOGLE_KEY_FILE_PATH:
