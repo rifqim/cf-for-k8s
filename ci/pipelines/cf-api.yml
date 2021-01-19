@@ -30,10 +30,9 @@ groups:
   - samus-cf-for-k8s
   - backup-metadata-generator-deploy-and-test
   - k8s-ci-passed
-# TODO: bring this back
-# - name: ship-it
-#   jobs:
-#   - ship-it-k8s
+- name: ship-it
+  jobs:
+  - ship-it-k8s
 
 resource_types:
 - name: slack-notification
@@ -232,6 +231,22 @@ resources:
   type: slack-notification
   source:
     url: ((slack_failure_hook_url))
+
+- name: capi-k8s-github-release
+  type: github-release
+  source:
+    user: cloudfoundry
+    repository: capi-k8s-release
+    drafts: true
+    access_token: ((github_access_token))
+
+- name: capi-k8s-github-published-release
+  type: github-release
+  source:
+    user: cloudfoundry
+    repository: capi-k8s-release
+    drafts: false
+    access_token: ((github_access_token))
 
 jobs:
 - name: provision-samus-cluster
@@ -732,3 +747,33 @@ jobs:
     params:
       repository: updated-capi-k8s-release
 
+- name: ship-it-k8s
+  serial_groups: [k8s-version]
+  plan:
+  - in_parallel:
+    - get: cf-for-k8s-ci
+    - get: capi-k8s-release-ci-passed
+      passed: [k8s-ci-passed]
+    - get: cloud-controller-ng
+      passed: [k8s-ci-passed]
+    - get: capi-k8s-github-published-release
+  - task: bump-version-from-github-release
+    file: cf-for-k8s-ci/ci/tasks/cake/bump_minor_version_from_github_release.yml
+    input_mapping:
+      github-release: capi-k8s-github-published-release
+  - task: generate-github-release
+    input_mapping:
+      capi-k8s-release-version: bumped-minor-version
+      capi-k8s-release: capi-k8s-release-ci-passed
+    file: cf-for-k8s-ci/ci/tasks/cake/generate_k8s_github_release.yml
+  - put: capi-k8s-release-ci-passed
+    params:
+      repository: capi-k8s-release-ci-passed
+      tag: generated-release/version
+      only_tag: true
+  - put: capi-k8s-github-release
+    params:
+      body: generated-release/body
+      commitish: generated-release/commitish
+      name: generated-release/name
+      tag: generated-release/version
