@@ -248,6 +248,13 @@ resources:
     drafts: false
     access_token: ((github_access_token))
 
+- name: relint-envs
+  type: git
+  source:
+    branch: main
+    uri: git@github.com:cloudfoundry/relint-envs.git
+    private_key: ((relint-ci-repository_readwrite_deploy_key.private_key))
+
 jobs:
 - name: provision-samus-cluster
   plan:
@@ -546,7 +553,7 @@ jobs:
     - get: cf-for-k8s-ci
     - get: capi-bara-tests
     - get: cf-cli
-    - get: capi-ci-private
+    - get: relint-envs
     - get: cf-for-k8s
       trigger: true
     - get: capi-docker-image
@@ -574,22 +581,22 @@ jobs:
   - task: delete-deployment
     file: cf-for-k8s-ci/ci/tasks/cake/delete-cf-for-k8s.yml
     params:
-      CAPI_ENVIRONMENT_NAME: samus
+      ENVIRONMENT_NAME: samus
       GOOGLE_SERVICE_ACCOUNT_EMAIL: concourse@cff-capi-samus.iam.gserviceaccount.com
       GOOGLE_PROJECT_NAME: cff-capi-samus
-      GOOGLE_KEY_FILE_PATH: capi-ci-private/samus/concourse-service-account.json
+      GOOGLE_KEY_FILE_PATH: relint-envs/k8s-environments/samus/concourse-service-account.json
   - task: deploy
     file: cf-for-k8s-ci/ci/tasks/cake/deploy-cf-for-k8s.yml
     input_mapping:
       capi-k8s-release: capi-k8s-release-except-images
       cluster-tf-state: samus-cluster-tf-state
     params:
-      CAPI_ENVIRONMENT_NAME: samus
+      ENVIRONMENT_NAME: samus
       GOOGLE_SERVICE_ACCOUNT_EMAIL: concourse@cff-capi-samus.iam.gserviceaccount.com
       GOOGLE_PROJECT_NAME: cff-capi-samus
       CLUSTER_NAME: samus
       GCP_ZONE: us-west1-a
-      GOOGLE_KEY_FILE_PATH: capi-ci-private/samus/concourse-service-account.json
+      GOOGLE_KEY_FILE_PATH: relint-envs/k8s-environments/samus/concourse-service-account.json
     ensure:
       do:
       - task: commit-env-metadata
@@ -597,8 +604,8 @@ jobs:
         params:
           REPO_SUBDIRECTORY: samus
         input_mapping:
-          private-env-repo: capi-ci-private
-      - put: capi-ci-private
+          private-env-repo: relint-envs
+      - put: relint-envs
         params:
           repository: updated-private-env-repo
           rebase: true
@@ -614,7 +621,7 @@ jobs:
         CONFIG_FILE_PATH: samus/integration_config.json
         GOOGLE_SERVICE_ACCOUNT_EMAIL: concourse@cff-capi-samus.iam.gserviceaccount.com
         GOOGLE_PROJECT_NAME: cff-capi-samus
-        GOOGLE_KEY_FILE_PATH: capi-ci-private/samus/concourse-service-account.json
+        GOOGLE_KEY_FILE_PATH: relint-envs/k8s-environments/samus/concourse-service-account.json
         NODES: 3
     - task: run-smoke-tests
       file: cf-for-k8s-ci/ci/tasks/cake/run-smoke-tests.yml
@@ -622,7 +629,7 @@ jobs:
         CAPI_ENVIRONMENT_NAME: samus
         GOOGLE_SERVICE_ACCOUNT_EMAIL: concourse@cff-capi-samus.iam.gserviceaccount.com
         GOOGLE_PROJECT_NAME: cff-capi-samus
-        GOOGLE_KEY_FILE_PATH: capi-ci-private/samus/concourse-service-account.json
+        GOOGLE_KEY_FILE_PATH: relint-envs/k8s-environments/samus/concourse-service-account.json
         SMOKE_TEST_SKIP_SSL: true
     - task: capi-bara-tests
       file: cf-for-k8s-ci/ci/tasks/cake/run-baras.yml
@@ -631,7 +638,7 @@ jobs:
       params:
         GOOGLE_SERVICE_ACCOUNT_EMAIL: concourse@cff-capi-samus.iam.gserviceaccount.com
         GOOGLE_PROJECT_NAME: cff-capi-samus
-        GOOGLE_KEY_FILE_PATH: capi-ci-private/samus/concourse-service-account.json
+        GOOGLE_KEY_FILE_PATH: relint-envs/k8s-environments/samus/concourse-service-account.json
         NODES: 3
         FLAKE_ATTEMPTS: 2 # TODO: Set this back to 1 once Samus stabilizes
 
