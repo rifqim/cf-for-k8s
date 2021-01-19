@@ -15,7 +15,7 @@ inputs:
 - name: registry-buddy-docker-image
 - name: nginx-docker-image
 - name: backup-metadata-generator-docker-image
-- name: cloud_controller_ng
+- name: cloud-controller-ng
 - name: capi-nginx
 - name: cf-api-controllers
 - name: registry-buddy
