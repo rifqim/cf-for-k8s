@@ -64,10 +64,10 @@ pushd "capi-k8s-release"
   scripts/bump-cf-for-k8s.sh
 popd
 
-source "capi-ci-private/${CAPI_ENVIRONMENT_NAME}/.envrc"
-cp -r "capi-ci-private/${CAPI_ENVIRONMENT_NAME}/." env-metadata/
+source "relint-envs/k8s-environments/${ENVIRONMENT_NAME}/.envrc"
+cp -r "relint-envs/k8s-environments/${ENVIRONMENT_NAME}/." env-metadata/
 
-cf-for-k8s/hack/generate-values.sh -d "${CAPI_ENVIRONMENT_NAME}.capi.land" -g "${SERVICE_ACCOUNT_KEY}" > env-metadata/cf-install-values.yml
+cf-for-k8s/hack/generate-values.sh -d "${ENVIRONMENT_NAME}.capi.land" -g "${SERVICE_ACCOUNT_KEY}" > env-metadata/cf-install-values.yml
 
 lb_static_ip="$(jq -r .lb_static_ip cluster-tf-state/metadata)"
 kapp deploy -a cf -f <(ytt -f cf-for-k8s/config/ -f env-metadata/cf-install-values.yml \
@@ -75,12 +75,12 @@ kapp deploy -a cf -f <(ytt -f cf-for-k8s/config/ -f env-metadata/cf-install-valu
   -v load_balancer.enable="true") -y
 
 bosh interpolate --path /cf_admin_password env-metadata/cf-install-values.yml > env-metadata/cf-admin-password.txt
-echo "${CAPI_ENVIRONMENT_NAME}.capi.land" > env-metadata/dns-domain.txt
+echo "${ENVIRONMENT_NAME}.capi.land" > env-metadata/dns-domain.txt
 
 cat > env-metadata/integration_config.json << EOF
 {
-  "api": "api.${CAPI_ENVIRONMENT_NAME}.capi.land",
-  "apps_domain": "apps.${CAPI_ENVIRONMENT_NAME}.capi.land",
+  "api": "api.${ENVIRONMENT_NAME}.capi.land",
+  "apps_domain": "apps.${ENVIRONMENT_NAME}.capi.land",
   "admin_user": "admin",
   "admin_password": "$(cat env-metadata/cf-admin-password.txt)",
   "skip_ssl_validation": true,

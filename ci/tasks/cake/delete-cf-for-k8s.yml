@@ -9,14 +9,14 @@ image_resource:
 
 inputs:
 - name: cf-for-k8s-ci
-- name: capi-ci-private
+- name: relint-envs
 - name: cf-for-k8s
 
 params:
   # Required.
-  # This is the environment name inside capi-ci-private. This should be the
+  # This is the environment name inside relint-envs. This should be the
   # directory name.
-  CAPI_ENVIRONMENT_NAME:
+  ENVIRONMENT_NAME:
 
   # Required.
   # This is the Google Cloud project name.
