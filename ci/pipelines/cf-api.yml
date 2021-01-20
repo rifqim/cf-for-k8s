@@ -571,7 +571,6 @@ jobs:
     - get: capi-k8s-release
     - get: cf-for-k8s-ci
     - get: capi-bara-tests
-    - get: relint-envs
     - get: cf-for-k8s
       trigger: true
     - get: capi-docker-image
@@ -593,8 +592,6 @@ jobs:
       passed: [registry-buddy-docker-image]
     - get: capi-nginx
       passed: [build-nginx-docker-image]
-    - get: samus-cluster-tf-state
-      passed: [provision-samus-cluster]
     - get: cf-acceptance-tests
   - put: ready-pool
     params:
@@ -611,7 +608,6 @@ jobs:
     file: cf-for-k8s-ci/ci/tasks/install-cf-on-gke/task.yml
     input_mapping:
       pool-lock: ready-pool
-      cf-for-k8s: cf-for-k8s-develop
     params:
       GCP_SERVICE_ACCOUNT_JSON: ((ci_k8s_gcp_service_account_json))
       GCP_PROJECT_NAME: ((ci_k8s_gcp_project_name))
@@ -621,6 +617,122 @@ jobs:
       APP_REGISTRY_USERNAME: ((cf_for_k8s_private_dockerhub.username))
       APP_REGISTRY_PASSWORD: ((cf_for_k8s_private_dockerhub.password))
       DOMAIN: k8s-dev.relint.rocks
+  - task: generate-integration-config
+    config:
+      platform: linux
+      image_resource:
+        type: docker-image
+        source:
+          repository: cloudfoundry/cf-for-k8s-ci
+      inputs:
+      - name: cf-for-k8s-ci
+      - name: env-metadata
+      - name: cf-acceptance-tests
+      outputs:
+      - name: integration-config
+      params:
+        CF_APPS_DOMAIN: ""
+        CF_API_DOMAIN: ""
+        CF_ADMIN_PASSWORD: ""
+        NUM_FLAKE_ATTEMPTS: 2
+        NUM_NODES: 6
+        SKIP_SSL_VALIDATION: true
+        CF_PUSH_TIMEOUT: 600
+        DEFAULT_TIMEOUT: 360
+        INCLUDE_APPS: false
+        INCLUDE_BACKEND_COMPATABILITY: false
+        INCLUDE_DEPLOYMENTS: false
+        INCLUDE_DETECT: false
+        INCLUDE_DOCKER: false
+        INCLUDE_INTERNET_DEPENDENT: false
+        INCLUDE_DOCKER_REGISTRY: false
+        INCLUDE_ROUTE_SERVICES: false
+        INCLUDE_ROUTING: false
+        INCLUDE_SERVICE_DISCOVERY: false
+        INCLUDE_SERVICE_INSTANCE_SHARING: false
+        INCLUDE_SERVICES: false
+        INCLUDE_TASKS: false
+        INCLUDE_V3: false
+        RUBY_BUILDPACK: paketo-buildpacks/ruby
+        PYTHON_BUILDPACK: paketo-community/python
+        GO_BUILDPACK: paketo-buildpacks/go
+        JAVA_BUILDPACK: paketo-buildpacks/java
+        NODEJS_BUILDPACK: paketo-buildpacks/nodejs
+        PHP_BUILDPACK: paketo-buildpacks/php
+        BINARY_BUILDPACK: paketo-buildpacks/procfile
+      run:
+        path: /bin/bash
+        args:
+          - -c
+          - |
+            if [[ -e env-metadata ]]; then
+              DNS_DOMAIN=$(cat env-metadata/dns-domain.txt)
+              CF_ADMIN_PASSWORD="$(cat env-metadata/cf-admin-password.txt)"
+
+              CF_APPS_DOMAIN="apps.${DNS_DOMAIN}"
+              CF_API_DOMAIN="api.${DNS_DOMAIN}"
+            fi
+
+            echo '{}' | jq \
+            --arg cf_api_url "${CF_API_DOMAIN}" \
+            --arg cf_apps_url "${CF_APPS_DOMAIN}" \
+            --arg cf_admin_password "${CF_ADMIN_PASSWORD}" \
+            --argjson cf_push_timeout "${CF_PUSH_TIMEOUT}" \
+            --argjson default_timeout "${DEFAULT_TIMEOUT}" \
+            --argjson skip_ssl_validation "${SKIP_SSL_VALIDATION}" \
+            --argjson include_apps "${INCLUDE_APPS}" \
+            --argjson include_backend_compatability "${INCLUDE_BACKEND_COMPATABILITY}" \
+            --argjson include_deployments "${INCLUDE_DEPLOYMENTS}" \
+            --argjson include_detect "${INCLUDE_DETECT}" \
+            --argjson include_docker "${INCLUDE_DOCKER}" \
+            --argjson include_internet_dependent "${INCLUDE_INTERNET_DEPENDENT}" \
+            --argjson include_docker_registry "${INCLUDE_DOCKER_REGISTRY}" \
+            --argjson include_route_services "${INCLUDE_ROUTE_SERVICES}" \
+            --argjson include_routing "${INCLUDE_ROUTING}" \
+            --argjson include_service_discovery "${INCLUDE_SERVICE_DISCOVERY}" \
+            --argjson include_service_instance_sharing "${INCLUDE_SERVICE_INSTANCE_SHARING}" \
+            --argjson include_services "${INCLUDE_SERVICES}" \
+            --argjson include_tasks "${INCLUDE_TASKS}" \
+            --argjson include_v3 "${INCLUDE_V3}" \
+            --arg ruby_buildpack "${RUBY_BUILDPACK}" \
+            --arg python_buildpack "${PYTHON_BUILDPACK}" \
+            --arg go_buildpack "${GO_BUILDPACK}" \
+            --arg java_buildpack "${JAVA_BUILDPACK}" \
+            --arg nodejs_buildpack "${NODEJS_BUILDPACK}" \
+            --arg php_buildpack "${PHP_BUILDPACK}" \
+            --arg binary_buildpack "${BINARY_BUILDPACK}" \
+            '{
+              "api": $cf_api_url,
+              "admin_user": "admin",
+              "admin_password": $cf_admin_password,
+              "apps_domain": $cf_apps_url,
+              "cf_push_timeout": $cf_push_timeout,
+              "default_timeout": $default_timeout,
+              "skip_ssl_validation": $skip_ssl_validation,
+              "timeout_scale": 1,
+              "include_apps": $include_apps,
+              "include_backend_compatibility": $include_backend_compatability,
+              "include_deployments": $include_deployments,
+              "include_detect": $include_detect,
+              "include_docker": $include_docker,
+              "include_internet_dependent": $include_internet_dependent,
+              "include_private_docker_registry": $include_docker_registry,
+              "include_route_services": $include_route_services,
+              "include_routing": $include_routing,
+              "include_service_discovery": $include_service_discovery,
+              "include_service_instance_sharing": $include_service_instance_sharing,
+              "include_services": $include_services,
+              "include_tasks": $include_tasks,
+              "include_v3": $include_v3,
+              "infrastructure": "kubernetes",
+              "ruby_buildpack_name": $ruby_buildpack,
+              "python_buildpack_name": $python_buildpack,
+              "go_buildpack_name": $go_buildpack,
+              "java_buildpack_name": $java_buildpack,
+              "nodejs_buildpack_name": $nodejs_buildpack,
+              "php_buildpack_name": $php_buildpack,
+              "binary_buildpack_name": $binary_buildpack
+            }' > integration-config/integration_config.json
   - in_parallel:
     - task: run-cats
       file: cf-for-k8s-ci/ci/tasks/run-cats/task.yml
@@ -631,132 +743,16 @@ jobs:
         INCLUDE_INTERNET_DEPENDENT: true
     - task: run-smoke-tests
       file: cf-for-k8s-ci/ci/tasks/run-smoke-tests/task.yml
-      input_mapping:
-        cf-for-k8s: cf-for-k8s-develop
       params:
         SMOKE_TEST_SKIP_SSL: false
-    # TODO: fix this
-    - task: generate-integration-config
-      config:
-        platform: linux
-        image_resource:
-          type: docker-image
-          source:
-            repository: cloudfoundry/cf-for-k8s-ci
-        inputs:
-        - name: cf-for-k8s-ci
-        - name: env-metadata
-        - name: cf-acceptance-tests
-        outputs:
-        - name: integration-config
-        params:
-          CF_APPS_DOMAIN: ""
-          CF_API_DOMAIN: ""
-          CF_ADMIN_PASSWORD: ""
-          NUM_FLAKE_ATTEMPTS: 2
-          NUM_NODES: 6
-          SKIP_SSL_VALIDATION: true
-          CF_PUSH_TIMEOUT: 600
-          DEFAULT_TIMEOUT: 360
-          INCLUDE_APPS: false
-          INCLUDE_BACKEND_COMPATABILITY: false
-          INCLUDE_DEPLOYMENTS: false
-          INCLUDE_DETECT: false
-          INCLUDE_DOCKER: false
-          INCLUDE_INTERNET_DEPENDENT: false
-          INCLUDE_DOCKER_REGISTRY: false
-          INCLUDE_ROUTE_SERVICES: false
-          INCLUDE_ROUTING: false
-          INCLUDE_SERVICE_DISCOVERY: false
-          INCLUDE_SERVICE_INSTANCE_SHARING: false
-          INCLUDE_SERVICES: false
-          INCLUDE_TASKS: false
-          INCLUDE_V3: false
-          RUBY_BUILDPACK: paketo-buildpacks/ruby
-          PYTHON_BUILDPACK: paketo-community/python
-          GO_BUILDPACK: paketo-buildpacks/go
-          JAVA_BUILDPACK: paketo-buildpacks/java
-          NODEJS_BUILDPACK: paketo-buildpacks/nodejs
-          PHP_BUILDPACK: paketo-buildpacks/php
-          BINARY_BUILDPACK: paketo-buildpacks/procfile
-        run:
-          path: /bin/bash
-          args:
-            - -c
-            - |
-              if [[ -e env-metadata ]]; then
-                DNS_DOMAIN=$(cat env-metadata/dns-domain.txt)
-                CF_ADMIN_PASSWORD="$(cat env-metadata/cf-admin-password.txt)"
-
-                CF_APPS_DOMAIN="apps.${DNS_DOMAIN}"
-                CF_API_DOMAIN="api.${DNS_DOMAIN}"
-              fi
-
-              echo '{}' | jq \
-              --arg cf_api_url "${CF_API_DOMAIN}" \
-              --arg cf_apps_url "${CF_APPS_DOMAIN}" \
-              --arg cf_admin_password "${CF_ADMIN_PASSWORD}" \
-              --argjson cf_push_timeout "${CF_PUSH_TIMEOUT}" \
-              --argjson default_timeout "${DEFAULT_TIMEOUT}" \
-              --argjson skip_ssl_validation "${SKIP_SSL_VALIDATION}" \
-              --argjson include_apps "${INCLUDE_APPS}" \
-              --argjson include_backend_compatability "${INCLUDE_BACKEND_COMPATABILITY}" \
-              --argjson include_deployments "${INCLUDE_DEPLOYMENTS}" \
-              --argjson include_detect "${INCLUDE_DETECT}" \
-              --argjson include_docker "${INCLUDE_DOCKER}" \
-              --argjson include_internet_dependent "${INCLUDE_INTERNET_DEPENDENT}" \
-              --argjson include_docker_registry "${INCLUDE_DOCKER_REGISTRY}" \
-              --argjson include_route_services "${INCLUDE_ROUTE_SERVICES}" \
-              --argjson include_routing "${INCLUDE_ROUTING}" \
-              --argjson include_service_discovery "${INCLUDE_SERVICE_DISCOVERY}" \
-              --argjson include_service_instance_sharing "${INCLUDE_SERVICE_INSTANCE_SHARING}" \
-              --argjson include_services "${INCLUDE_SERVICES}" \
-              --argjson include_tasks "${INCLUDE_TASKS}" \
-              --argjson include_v3 "${INCLUDE_V3}" \
-              --arg ruby_buildpack "${RUBY_BUILDPACK}" \
-              --arg python_buildpack "${PYTHON_BUILDPACK}" \
-              --arg go_buildpack "${GO_BUILDPACK}" \
-              --arg java_buildpack "${JAVA_BUILDPACK}" \
-              --arg nodejs_buildpack "${NODEJS_BUILDPACK}" \
-              --arg php_buildpack "${PHP_BUILDPACK}" \
-              --arg binary_buildpack "${BINARY_BUILDPACK}" \
-              '{
-                "api": $cf_api_url,
-                "admin_user": "admin",
-                "admin_password": $cf_admin_password,
-                "apps_domain": $cf_apps_url,
-                "cf_push_timeout": $cf_push_timeout,
-                "default_timeout": $default_timeout,
-                "skip_ssl_validation": $skip_ssl_validation,
-                "timeout_scale": 1,
-                "include_apps": $include_apps,
-                "include_backend_compatibility": $include_backend_compatability,
-                "include_deployments": $include_deployments,
-                "include_detect": $include_detect,
-                "include_docker": $include_docker,
-                "include_internet_dependent": $include_internet_dependent,
-                "include_private_docker_registry": $include_docker_registry,
-                "include_route_services": $include_route_services,
-                "include_routing": $include_routing,
-                "include_service_discovery": $include_service_discovery,
-                "include_service_instance_sharing": $include_service_instance_sharing,
-                "include_services": $include_services,
-                "include_tasks": $include_tasks,
-                "include_v3": $include_v3,
-                "infrastructure": "kubernetes",
-                "ruby_buildpack_name": $ruby_buildpack,
-                "python_buildpack_name": $python_buildpack,
-                "go_buildpack_name": $go_buildpack,
-                "java_buildpack_name": $java_buildpack,
-                "nodejs_buildpack_name": $nodejs_buildpack,
-                "php_buildpack_name": $php_buildpack,
-                "binary_buildpack_name": $binary_buildpack
-              }' > integration-config/integration_config.json
     - task: capi-bara-tests
       file: cf-for-k8s-ci/ci/tasks/cake/run-baras.yml
       input_mapping:
         pool-lock: ready-pool
       params:
+        GCP_SERVICE_ACCOUNT_JSON: ((ci_k8s_gcp_service_account_json))
+        GCP_PROJECT_NAME: ((ci_k8s_gcp_project_name))
+        GCP_PROJECT_ZONE: ((ci_k8s_gcp_project_zone))
         NODES: 3
         FLAKE_ATTEMPTS: 2 # TODO: Set this back to 1 once Samus stabilizes
   - task: delete-cf
@@ -767,14 +763,16 @@ jobs:
       GCP_PROJECT_NAME: ((ci_k8s_gcp_project_name))
       GCP_PROJECT_ZONE: ((ci_k8s_gcp_project_zone))
       GCP_SERVICE_ACCOUNT_JSON: ((ci_k8s_gcp_service_account_json))
-  - put: destroy-pool
-    params:
-      add: ready-pool
-  - put: ready-pool
-    params:
-      remove: ready-pool
+  ensure:
+    do:
+    - put: destroy-pool
+      params:
+        add: ready-pool
+    - put: ready-pool
+      params:
+        remove: ready-pool
 
-  # TODO: rename this job
+# TODO: remove this job
 - name: samus-cf-for-k8s
   serial: true
   serial_groups: [samus]
